@@ -15,6 +15,7 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
 
         let webview = WKWebView()
+        webview.navigationDelegate = self
         view.addSubview(webview)
         webview.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -24,5 +25,18 @@ class ViewController: UIViewController {
             webview.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
         webview.load(URLRequest(url: URL(string: "https://www.watsons.com.tw")!))
+    }
+}
+
+extension ViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+
+        if let url = navigationAction.request.url, url.scheme == "line" {
+            decisionHandler(.cancel)
+            UIApplication.shared.open(url)
+            return
+        }
+
+        decisionHandler(.allow)
     }
 }
